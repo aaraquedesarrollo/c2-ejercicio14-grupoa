@@ -2,24 +2,23 @@
 
 // Datos para las APIs
 const geocodingApi = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
-const mapboxToken = "pk.eyJ1IjoicG9scmVpZ2JyIiwiYSI6ImNrcGk3dWVoejBjNDIydm9memF1NmZ0NzkifQ.fz_0GxsCNlEVAQxfzMBVWg&country=ES";
+const mapboxToken =
+  "pk.eyJ1IjoicG9scmVpZ2JyIiwiYSI6ImNrcGk3dWVoejBjNDIydm9memF1NmZ0NzkifQ.fz_0GxsCNlEVAQxfzMBVWg&country=ES";
 
 const tmbApi = "https://api.tmb.cat/v1/planner/plan";
 const appId = "e447e93a"; // Mete aquí el app_id de TMB
 const appKey = "f32d9fd5d43be11e6061bd0c483f3cf6"; // Mete aquí el app_key de TMB
 mapboxgl.accessToken = mapboxToken;
 
-const nombreLugar = "arc de triomf";
+const extraerDatos = async (nombreLugar) => {
+  const response = await fetch(
+    `${geocodingApi}${encodeURI(nombreLugar)}.json?access_token=${mapboxToken}`
+  );
 
-fetch(
-  `${geocodingApi}${encodeURI(nombreLugar)}.json?access_token=${mapboxToken}`
-)
-  .then((response) => response.json())
-  .then((datosMapbox) => extraerDatos(datosMapbox));
+  const datosJson = await response.json();
+  const coordenadasReturn = datosJson.features[0].center;
 
-const extraerDatos = (datos) => {
-  const coordenadas = datos.features[0].center;
-  return coordenadas;
+  return coordenadasReturn;
 };
 
 // LLama a esta función para generar el pequeño mapa que sale en cada paso
@@ -64,13 +63,12 @@ const clonarElemento = (clase) => {
 };
 
 // Obtiene las coordenadas de nuestra posicion actual
-const getUbicacionActual = () => {
+const getUbicacionActual = (latitud, longitud) => {
   navigator.geolocation.getCurrentPosition((pos) => {
-    coordenadas.desde.latitud = pos.coords.latitude;
-    coordenadas.desde.longitud = pos.coords.longitude;
+    latitud = pos.coords.latitude;
+    longitud = pos.coords.longitude;
   });
 };
-
 
 const devolverHora = (tiempoUnix) => {
   const fecha = new Date(tiempoUnix);
@@ -96,50 +94,50 @@ const formatoHora = (time) => {
   return ret;
 };
 
-const comoIr = (coordenadasOrigen, coordenadasDestino) => {
+const comoIr = async (coordenadasOrigen, coordenadasDestino) => {
   const elementoPaso = clonarElemento("paso-dummy");
   const elementoPadre = document.querySelector(".pasos");
-  const pasos = getPasosViaje(coordenadasOrigen, coordenadasDestino);
+  const pasos = await getPasosViaje(coordenadasOrigen, coordenadasDestino);
 
-  pasos.then((datos) => {
-    for (const pasoIndex in datos) {
-      elementoPaso.querySelector(".paso-encabezado .paso-numero").textContent =
-        +pasoIndex + 1;
+  for (const pasoIndex in pasos) {
+    elementoPaso.querySelector(".paso-encabezado .paso-numero").textContent =
+      +pasoIndex + 1;
 
-      elementoPaso.querySelector(".paso-from").textContent =
-        datos[pasoIndex].from.name;
+    elementoPaso.querySelector(".paso-from").textContent =
+      pasos[pasoIndex].from.name;
 
-      elementoPaso.querySelector(".paso-to").textContent =
-        datos[pasoIndex].to.name;
+    elementoPaso.querySelector(".paso-to").textContent =
+      pasos[pasoIndex].to.name;
 
-      elementoPaso.querySelector(".paso-hora .dato").textContent = devolverHora(
-        datos[pasoIndex].startTime
-      );
+    elementoPaso.querySelector(".paso-hora .dato").textContent = devolverHora(
+      pasos[pasoIndex].startTime
+    );
 
-      elementoPaso.querySelector(
-        ".paso-distancia .dato"
-      ).textContent = `${Math.trunc(datos[pasoIndex].distance)} m`;
+    elementoPaso.querySelector(
+      ".paso-distancia .dato"
+    ).textContent = `${Math.trunc(pasos[pasoIndex].distance)} m`;
 
-      elementoPaso.querySelector(".paso-duracion .dato").textContent =
-        formatoHora(datos[pasoIndex].duration);
+    elementoPaso.querySelector(".paso-duracion .dato").textContent =
+      formatoHora(pasos[pasoIndex].duration);
 
-      coordenadas.desde.latitud = +datos[pasoIndex].from.lat;
-      coordenadas.desde.longitud = +datos[pasoIndex].from.lon;
+    coordenadas.desde.latitud = +pasos[pasoIndex].from.lat;
+    coordenadas.desde.longitud = +pasos[pasoIndex].from.lon;
 
-      coordenadas.hasta.latitud = +datos[pasoIndex].to.lat;
-      coordenadas.hasta.longitud = +datos[pasoIndex].to.lon;
+    coordenadas.hasta.latitud = +pasos[pasoIndex].to.lat;
+    coordenadas.hasta.longitud = +pasos[pasoIndex].to.lon;
 
-      generaMapa(
-        [datos[pasoIndex].from.lat, datos[pasoIndex].from.lon],
-        elementoPaso.querySelector(".mapa")
-      );
+    elementoPaso.querySelector(
+      ".paso-mapa"
+    ).href = `http://maps.google.com/maps?z=19&t=m&q=loc:${coordenadas.hasta.latitud}+${coordenadas.hasta.longitud}`;
 
-      elementoPadre.append(elementoPaso.cloneNode(true));
-    }
-  });
+    generaMapa(
+      [coordenadas.hasta.latitud, coordenadas.hasta.longitud],
+      elementoPaso.querySelector(".mapa")
+    );
+
+    elementoPadre.append(elementoPaso.cloneNode(true));
+  }
 };
-
-comoIr("41.3755204,2.149887", "41.42252,2.187824");
 
 // Muestra o oculta el input de texto en funcion de si Indicar ubicacion esta marcado o no
 const displayTextInput = () => {
@@ -160,3 +158,58 @@ const displayTextInput = () => {
   });
 };
 
+const rellenarCoordenadas = async () => {
+  const miUbicacionDesde = document.querySelector(
+    ".coordenadas input#de-mi-ubicacion"
+  );
+  const miubicacionHasta = document.querySelector(
+    ".coordenadas input#a-mi-ubicacion"
+  );
+
+  let coordeaAsync;
+
+  if (miUbicacionDesde.checked) {
+    getUbicacionActual(coordenadas.desde.latitud, coordenadas.desde.longitud);
+  } else {
+    coordeaAsync = await extraerDatos(
+      document.querySelector(".de-direccion-definitiva").value
+    );
+
+    coordenadas.desde.longitud = coordeaAsync[0];
+    coordenadas.desde.latitud = coordeaAsync[1];
+  }
+
+  if (miubicacionHasta.checked) {
+    getUbicacionActual(coordenadas.hasta.latitud, coordenadas.hasta.longitud);
+  } else {
+    coordeaAsync = await extraerDatos(
+      document.querySelector(".a-direccion-definitiva").value
+    );
+
+    coordenadas.hasta.longitud = coordeaAsync[0];
+    coordenadas.hasta.latitud = coordeaAsync[1];
+  }
+};
+const comoIrEvento = () => {
+  const boton = document.querySelector(".enviar");
+
+  boton.addEventListener("click", async (evento) => {
+    evento.preventDefault();
+    await rellenarCoordenadas();
+    comoIr(
+      `${coordenadas.desde.latitud},${coordenadas.desde.longitud}`,
+      `${coordenadas.hasta.latitud},${coordenadas.hasta.longitud}`
+    );
+  });
+};
+
+const anyadirEventos = () => {
+  displayTextInput();
+  comoIrEvento();
+};
+
+const main = () => {
+  anyadirEventos();
+};
+
+main();
