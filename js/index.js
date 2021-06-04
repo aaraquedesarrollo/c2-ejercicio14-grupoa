@@ -37,3 +37,11 @@ const clonarElemento = (clase) => {
   elemento.classList.remove(`.${clase}`);
   return elemento;
 };
+
+// Obtiene las coordenadas de nuestra posicion actual
+const getUbicacionActual = () => {
+  navigator.geolocation.getCurrentPosition((pos) => {
+    coordenadas.desde.latitud = pos.coords.latitude;
+    coordenadas.desde.longitud = pos.coords.longitude;
+  });
+};
