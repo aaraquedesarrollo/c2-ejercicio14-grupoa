@@ -45,7 +45,7 @@ const coordenadas = {
 // Clona el elemento dummy y le quita la clase
 const clonarElemento = (clase) => {
   const elemento = document.querySelector(`.${clase}`).cloneNode(true);
-  elemento.classList.remove(`.${clase}`);
+  elemento.classList.remove(`${clase}`);
   return elemento;
 };
 
@@ -56,3 +56,69 @@ const getUbicacionActual = () => {
     coordenadas.desde.longitud = pos.coords.longitude;
   });
 };
+
+const devolverHora = (tiempoUnix) => {
+  const fecha = new Date(tiempoUnix);
+  const horas = fecha.getHours();
+  const minutos = fecha.getMinutes();
+
+  return `${horas}:${minutos}`;
+};
+
+const formatoHora = (time) => {
+  // Hours, minutes and seconds
+  const hrs = time / 3600;
+  const mins = (time % 3600) / 60;
+  const secs = time % 60;
+
+  // Output like "1:01" or "4:03:59" or "123:03:59"
+  let ret = "";
+  if (hrs > 0) {
+    ret += `${hrs}:${mins < 10 ? "0" : ""}`;
+  }
+  ret += `${mins}:${secs < 10 ? "0" : ""}`;
+  ret += `${secs}`;
+  return ret;
+};
+
+const comoIr = (coordenadasOrigen, coordenadasDestino) => {
+  const elementoPaso = clonarElemento("paso-dummy");
+  const elementoPadre = document.querySelector(".pasos");
+  const pasos = getPasosViaje(coordenadasOrigen, coordenadasDestino);
+
+  pasos.then((datos) => {
+    for (const pasoIndex in datos) {
+      elementoPaso.querySelector(".paso-encabezado .paso-numero").textContent =
+        +pasoIndex + 1;
+
+      elementoPaso.querySelector(".paso-from").textContent =
+        datos[pasoIndex].from.name;
+
+      elementoPaso.querySelector(".paso-to").textContent =
+        datos[pasoIndex].to.name;
+
+      elementoPaso.querySelector(".paso-hora .dato").textContent = devolverHora(
+        datos[pasoIndex].startTime
+      );
+
+      elementoPaso.querySelector(
+        ".paso-distancia .dato"
+      ).textContent = `${Math.trunc(datos[pasoIndex].distance)} m`;
+
+      elementoPaso.querySelector(".paso-duracion .dato").textContent = format(
+        datos[pasoIndex].duration
+      );
+      coordenadas.desde.latitud = +datos[pasoIndex].from.lat;
+      coordenadas.desde.longitud = +datos[pasoIndex].from.lon;
+
+      coordenadas.hasta.latitud = +datos[pasoIndex].to.lat;
+      coordenadas.hasta.longitud = +datos[pasoIndex].to.lon;
+
+      /*       generaMapa(coordenadas, elementoPaso.querySelector(".mapa"));
+       */
+      elementoPadre.append(elementoPaso.cloneNode(true));
+    }
+  });
+};
+
+comoIr("41.3755204,2.149887", "41.42252,2.187824");
