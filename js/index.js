@@ -19,6 +19,17 @@ const generaMapa = (coordenadas, mapa) => {
   });
 };
 
+// Acceder a la api
+
+const getPasosViaje = async (coordenadasOrigen, coordenadasDestino) => {
+  const response = await fetch(
+    `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=${coordenadasOrigen}&toPlace=${coordenadasDestino}`
+  );
+
+  const json = await response.json();
+  return json.plan.itineraries[0].legs;
+};
+
 // Coordenadas que se mandarán a la API de TMB. Tienes que alimentar este objeto a partir de las coordenadas que te dé la API de Mapbox
 const coordenadas = {
   desde: {
