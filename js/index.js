@@ -9,13 +9,18 @@ const appId = "e447e93a"; // Mete aquí el app_id de TMB
 const appKey = "f32d9fd5d43be11e6061bd0c483f3cf6"; // Mete aquí el app_key de TMB
 mapboxgl.accessToken = mapboxToken;
 
-const nombreLugar = "hola adiós";
+const nombreLugar = "arc de triomf";
 
 fetch(
   `${geocodingApi}${encodeURI(nombreLugar)}.json?access_token=${mapboxToken}`
 )
   .then((response) => response.json())
   .then((datosMapbox) => extraerDatos(datosMapbox));
+
+const extraerDatos = (datos) => {
+  const coordenadas = datos.features[0].center;
+  return coordenadas;
+};
 
 // LLama a esta función para generar el pequeño mapa que sale en cada paso
 // Le tienes que pasar un array con las dos coordenadas y el elemento HTML donde tiene que generar el mapa
