@@ -45,3 +45,22 @@ const getUbicacionActual = () => {
     coordenadas.desde.longitud = pos.coords.longitude;
   });
 };
+
+// Muestra o oculta el input de texto en funcion de si Indicar ubicacion esta marcado o no
+const displayTextInput = () => {
+  const grupoRadioElementos = document.querySelectorAll(".coordenadas");
+  const indicarUbicacionElementos = document.querySelectorAll(
+    ".introducir-ubicacion input"
+  );
+  const inputTextElementos = document.querySelectorAll(".direccion-definitiva");
+
+  grupoRadioElementos.forEach((elemento, indice) => {
+    elemento.addEventListener("change", () => {
+      if (indicarUbicacionElementos[indice].checked) {
+        inputTextElementos[indice].classList.add("on");
+      } else {
+        inputTextElementos[indice].classList.remove("on");
+      }
+    });
+  });
+};
