@@ -30,3 +30,10 @@ const coordenadas = {
     longitud: 0,
   },
 };
+
+// Clona el elemento dummy y le quita la clase
+const clonarElemento = (clase) => {
+  const elemento = document.querySelector(`.${clase}`).cloneNode(true);
+  elemento.classList.remove(`.${clase}`);
+  return elemento;
+};
