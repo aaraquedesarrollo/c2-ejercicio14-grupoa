@@ -2,7 +2,8 @@
 
 // Datos para las APIs
 const geocodingApi = "https://api.mapbox.com/geocoding/v5/mapbox.places/";
-const mapboxToken = ""; // Mete aquí el Token de Mapbox
+const mapboxToken =
+  "pk.eyJ1IjoicG9scmVpZ2JyIiwiYSI6ImNrcGk3dWVoejBjNDIydm9memF1NmZ0NzkifQ.fz_0GxsCNlEVAQxfzMBVWg"; // Mete aquí el Token de Mapbox
 const tmbApi = "https://api.tmb.cat/v1/planner/plan";
 const appId = "e447e93a"; // Mete aquí el app_id de TMB
 const appKey = "f32d9fd5d43be11e6061bd0c483f3cf6"; // Mete aquí el app_key de TMB
@@ -105,17 +106,20 @@ const comoIr = (coordenadasOrigen, coordenadasDestino) => {
         ".paso-distancia .dato"
       ).textContent = `${Math.trunc(datos[pasoIndex].distance)} m`;
 
-      elementoPaso.querySelector(".paso-duracion .dato").textContent = format(
-        datos[pasoIndex].duration
-      );
+      elementoPaso.querySelector(".paso-duracion .dato").textContent =
+        formatoHora(datos[pasoIndex].duration);
+
       coordenadas.desde.latitud = +datos[pasoIndex].from.lat;
       coordenadas.desde.longitud = +datos[pasoIndex].from.lon;
 
       coordenadas.hasta.latitud = +datos[pasoIndex].to.lat;
       coordenadas.hasta.longitud = +datos[pasoIndex].to.lon;
 
-      /*       generaMapa(coordenadas, elementoPaso.querySelector(".mapa"));
-       */
+      generaMapa(
+        [datos[pasoIndex].from.lat, datos[pasoIndex].from.lon],
+        elementoPaso.querySelector(".mapa")
+      );
+
       elementoPadre.append(elementoPaso.cloneNode(true));
     }
   });
