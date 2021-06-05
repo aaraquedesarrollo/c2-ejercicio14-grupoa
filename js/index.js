@@ -99,6 +99,13 @@ const comoIr = async (coordenadasOrigen, coordenadasDestino) => {
   const elementoPadre = document.querySelector(".pasos");
   const pasos = await getPasosViaje(coordenadasOrigen, coordenadasDestino);
 
+  const removeAllChild = (parent) => {
+    while (parent.childElementCount > 1) {
+      parent.removeChild(parent.lastChild);
+    }
+  };
+  removeAllChild(elementoPadre);
+
   for (const pasoIndex in pasos) {
     elementoPaso.querySelector(".paso-encabezado .paso-numero").textContent =
       +pasoIndex + 1;
