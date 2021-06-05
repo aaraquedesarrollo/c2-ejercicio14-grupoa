@@ -175,8 +175,7 @@ const rellenarCoordenadas = async () => {
       document.querySelector(".de-direccion-definitiva").value
     );
 
-    coordenadas.desde.longitud = coordeaAsync[0];
-    coordenadas.desde.latitud = coordeaAsync[1];
+    [coordenadas.desde.longitud, coordenadas.desde.latitud] = coordeaAsync;
   }
 
   if (miubicacionHasta.checked) {
@@ -186,10 +185,10 @@ const rellenarCoordenadas = async () => {
       document.querySelector(".a-direccion-definitiva").value
     );
 
-    coordenadas.hasta.longitud = coordeaAsync[0];
-    coordenadas.hasta.latitud = coordeaAsync[1];
+    [coordenadas.hasta.longitud, coordenadas.hasta.latitud] = coordeaAsync;
   }
 };
+
 const comoIrEvento = () => {
   const boton = document.querySelector(".enviar");
 
