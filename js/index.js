@@ -63,6 +63,16 @@ const removeAllChild = (parent) => {
   }
 };
 
+const setEmoji = (mode) => {
+  if (mode === "walk") {
+    return "🚶";
+  } else if (mode === "bus") {
+    return "🚌";
+  } else if (mode === "subway" || mode === "rail") {
+    return "🚇";
+  }
+};
+
 // Obtiene las coordenadas de nuestra posicion actual
 const getUbicacion = (callback) => {
   navigator.geolocation.getCurrentPosition(callback);
@@ -143,8 +153,12 @@ const comoIr = (coordenadasOrigen, coordenadasDestino) => {
           ".paso-mapa"
         ).href = `http://maps.google.com/maps?z=19&t=m&q=loc:${coordenadas.hasta.latitud}+${coordenadas.hasta.longitud}`;
 
+        elementoPaso.querySelector(".emoji").textContent = setEmoji(
+          pasos[pasoIndex].mode.toLowerCase()
+        );
+
         generaMapa(
-          [coordenadas.hasta.latitud, coordenadas.hasta.longitud],
+          [coordenadas.desde.longitud, coordenadas.desde.latitud],
           elementoPaso.querySelector(".mapa")
         );
         elementoPadre.append(elementoPaso.cloneNode(true));
