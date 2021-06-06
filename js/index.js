@@ -106,6 +106,13 @@ const comoIr = (coordenadasOrigen, coordenadasDestino) => {
     .then((response) => response.json())
     .then((datos) => {
       const pasos = datos.plan.itineraries[0].legs;
+      
+  const removeAllChild = (parent) => {
+    while (parent.childElementCount > 1) {
+      parent.removeChild(parent.lastChild);
+    }
+  };
+  removeAllChild(elementoPadre);
 
       for (const pasoIndex in pasos) {
         elementoPaso.querySelector(
