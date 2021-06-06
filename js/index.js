@@ -63,13 +63,13 @@ const removeAllChild = (parent) => {
   }
 };
 
-const setEmoji = (mode) => {
+const setEmoji = (elementoPaso, mode) => {
   if (mode === "walk") {
-    return "🚶";
+    elementoPaso.classList.add("walk");
   } else if (mode === "bus") {
-    return "🚌";
+    elementoPaso.classList.add("bus");
   } else if (mode === "subway" || mode === "rail") {
-    return "🚇";
+    elementoPaso.classList.add("subway");
   }
 };
 
@@ -153,9 +153,7 @@ const comoIr = (coordenadasOrigen, coordenadasDestino) => {
           ".paso-mapa"
         ).href = `http://maps.google.com/maps?z=19&t=m&q=loc:${coordenadas.hasta.latitud}+${coordenadas.hasta.longitud}`;
 
-        elementoPaso.querySelector(".emoji").textContent = setEmoji(
-          paso.mode.toLowerCase()
-        );
+        setEmoji(elementoPaso, paso.mode.toLowerCase());
 
         generaMapa(
           [paso.to.lon, paso.to.lat],
@@ -208,12 +206,6 @@ const displayTextInput = () => {
       }
     });
   });
-};
-
-const indicarUbicacionEvento = () => {
-  const indicarUbicacionElementos = document.querySelectorAll(
-    ".introducir-ubicacion input"
-  );
 };
 
 const comoIrEvento = () => {
