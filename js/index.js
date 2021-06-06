@@ -81,19 +81,16 @@ const devolverHora = (tiempoUnix) => {
 };
 
 const formatoHora = (time) => {
-  // Hours, minutes and seconds
-  const hrs = time / 3600;
-  const mins = (time % 3600) / 60;
-  const secs = time % 60;
+  const hour = Math.floor(time / 3600);
+  const minutes = Math.floor((time % 3600) / 60);
+  const seconds = Math.floor((time % 3600) % 60);
 
-  // Output like "1:01" or "4:03:59" or "123:03:59"
-  let ret = "";
-  if (hrs > 0) {
-    ret += `${hrs}:${mins < 10 ? "0" : ""}`;
-  }
-  ret += `${mins}:${secs < 10 ? "0" : ""}`;
-  ret += `${secs}`;
-  return ret;
+  const hDisplay = hour > 0 ? hour + (hour == 1 ? " hora, " : " horas, ") : "";
+  const mDisplay =
+    minutes > 0 ? minutes + (minutes == 1 ? " minutos, " : " minutos, ") : "";
+  const sDisplay =
+    seconds > 0 ? seconds + (seconds == 1 ? " segundo" : " segundos") : "";
+  return hDisplay + mDisplay + sDisplay;
 };
 
 const comoIr = (coordenadasOrigen, coordenadasDestino) => {
@@ -106,13 +103,6 @@ const comoIr = (coordenadasOrigen, coordenadasDestino) => {
     .then((response) => response.json())
     .then((datos) => {
       const pasos = datos.plan.itineraries[0].legs;
-      
-  const removeAllChild = (parent) => {
-    while (parent.childElementCount > 1) {
-      parent.removeChild(parent.lastChild);
-    }
-  };
-  removeAllChild(elementoPadre);
 
       for (const pasoIndex in pasos) {
         elementoPaso.querySelector(
