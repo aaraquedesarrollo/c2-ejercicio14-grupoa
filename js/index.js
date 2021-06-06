@@ -122,43 +122,43 @@ const comoIr = (coordenadasOrigen, coordenadasDestino) => {
 
       removeAllChild(elementoPadre);
 
-      for (const pasoIndex in pasos) {
+      let numeroPaso = 0;
+
+      for (const paso of pasos) {
         elementoPaso.querySelector(
           ".paso-encabezado .paso-numero"
-        ).textContent = +pasoIndex + 1;
+        ).textContent = ++numeroPaso;
 
-        elementoPaso.querySelector(".paso-from").textContent =
-          pasos[pasoIndex].from.name;
+        elementoPaso.querySelector(".paso-from").textContent = paso.from.name;
 
-        elementoPaso.querySelector(".paso-to").textContent =
-          pasos[pasoIndex].to.name;
+        elementoPaso.querySelector(".paso-to").textContent = paso.to.name;
 
         elementoPaso.querySelector(".paso-hora .dato").textContent =
-          devolverHora(pasos[pasoIndex].startTime);
+          devolverHora(paso.startTime);
 
         elementoPaso.querySelector(
           ".paso-distancia .dato"
-        ).textContent = `${Math.trunc(pasos[pasoIndex].distance)} m`;
+        ).textContent = `${Math.trunc(paso.distance)} m`;
 
         elementoPaso.querySelector(".paso-duracion .dato").textContent =
-          formatoHora(pasos[pasoIndex].duration);
+          formatoHora(paso.duration);
 
-        coordenadas.desde.latitud = +pasos[pasoIndex].from.lat;
-        coordenadas.desde.longitud = +pasos[pasoIndex].from.lon;
+        coordenadas.desde.latitud = +paso.from.lat;
+        coordenadas.desde.longitud = +paso.from.lon;
 
-        coordenadas.hasta.latitud = +pasos[pasoIndex].to.lat;
-        coordenadas.hasta.longitud = +pasos[pasoIndex].to.lon;
+        coordenadas.hasta.latitud = +paso.to.lat;
+        coordenadas.hasta.longitud = +paso.to.lon;
 
         elementoPaso.querySelector(
           ".paso-mapa"
         ).href = `http://maps.google.com/maps?z=19&t=m&q=loc:${coordenadas.hasta.latitud}+${coordenadas.hasta.longitud}`;
 
         elementoPaso.querySelector(".emoji").textContent = setEmoji(
-          pasos[pasoIndex].mode.toLowerCase()
+          paso.mode.toLowerCase()
         );
 
         generaMapa(
-          [coordenadas.desde.longitud, coordenadas.desde.latitud],
+          [paso.to.lon, paso.to.lat],
           elementoPaso.querySelector(".mapa")
         );
         elementoPadre.append(elementoPaso.cloneNode(true));
