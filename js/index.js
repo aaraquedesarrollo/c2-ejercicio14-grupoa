@@ -57,6 +57,12 @@ const clonarElemento = (clase) => {
   return elemento;
 };
 
+const removeAllChild = (parent) => {
+  while (parent.childElementCount > 1) {
+    parent.removeChild(parent.lastChild);
+  }
+};
+
 // Obtiene las coordenadas de nuestra posicion actual
 const getUbicacion = (callback) => {
   navigator.geolocation.getCurrentPosition(callback);
@@ -85,11 +91,11 @@ const formatoHora = (time) => {
   const minutes = Math.floor((time % 3600) / 60);
   const seconds = Math.floor((time % 3600) % 60);
 
-  const hDisplay = hour > 0 ? hour + (hour == 1 ? " hora, " : " horas, ") : "";
+  const hDisplay = hour > 0 ? hour + (hour === 1 ? " hora, " : " horas, ") : "";
   const mDisplay =
-    minutes > 0 ? minutes + (minutes == 1 ? " minutos, " : " minutos, ") : "";
+    minutes > 0 ? minutes + (minutes === 1 ? " minutos, " : " minutos, ") : "";
   const sDisplay =
-    seconds > 0 ? seconds + (seconds == 1 ? " segundo" : " segundos") : "";
+    seconds > 0 ? seconds + (seconds === 1 ? " segundo" : " segundos") : "";
   return hDisplay + mDisplay + sDisplay;
 };
 
@@ -97,12 +103,14 @@ const comoIr = (coordenadasOrigen, coordenadasDestino) => {
   const elementoPaso = clonarElemento("paso-dummy");
   const elementoPadre = document.querySelector(".pasos");
 
-  const response = fetch(
+  fetch(
     `${tmbApi}?app_id=${appId}&app_key=${appKey}&fromPlace=${coordenadasOrigen}&toPlace=${coordenadasDestino}`
   )
     .then((response) => response.json())
     .then((datos) => {
       const pasos = datos.plan.itineraries[0].legs;
+
+      removeAllChild(elementoPadre);
 
       for (const pasoIndex in pasos) {
         elementoPaso.querySelector(
